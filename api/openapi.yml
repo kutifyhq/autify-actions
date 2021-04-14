@@ -1,0 +1,401 @@
+openapi: 3.0.0
+info:
+  title: Autify API
+  version: v1
+  description: |
+    ## Authorization
+    You can authenticate the API by using a personal access token and passing it to the Bearer header. To generate or manage API keys、please visit [your account page](https://app.autify.com/settings).
+
+    Example of using a personal access token in the header：
+    ```
+    curl -H "Authorization: Bearer YOUR_PERSONAL_ACCESS_TOKEN" https://app.autify.com/api/v1/
+    ```
+
+    If the credentials are invalid or omitted, an error message is returned with status code 401：
+    ```
+    {
+      "errors":[{
+        "message": "Bad credentials"
+      }]
+    }
+    ```
+
+    ## Overview
+    Currently, we support the following APIs. For more details, open the toggle for each endpoint.
+
+    * Schedule: Request a test execution by specifying a test_plan ID.
+    * Scenario: Get a list of scenarios. The detail of the scenario will be returned when a scenario ID is specified.
+    * Result: Get a list of test results. The detail of the test result will be returned when a test result ID is specified.
+servers:
+  - url: "https://app.autify.com/api/v1/"
+    description: Production server
+paths:
+  "/schedules/{id}":
+    post:
+      description: |
+        _Note: the Schedule is the TestPlan now._<br/><br/>
+        In order to request executing the test plan `https://app.autify.com/projects/1/test_plans/3` , specify the following URL for API call `https://app.autify.com/api/v1/schedules/3` .<br/><br/>
+        # Run TestPlan
+      tags:
+        - schedule
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: |
+            For example, the `{id}` for the following URL is **3**.
+            `https://app.autify.com/projects/1/test_plans/3`
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TestPlanResult"
+  "/projects/{project_id}/scenarios":
+    get:
+      description: |
+        # List scenarios
+      tags:
+        - scenario
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          description: |
+            For example, the `{project_id}` for the following URL is **1**.<br/>
+            `https://app.autify.com/projects/1/scenarios`
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+          description: The number of page returns.
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Story"
+  "/projects/{project_id}/scenarios/{id}":
+    get:
+      description: |
+        # Get a scenario
+      tags:
+        - scenario
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          description: |
+            For example, the `{project_id}` for the following URL is **1**.<br/>
+            `https://app.autify.com/projects/1/scenarios/2`
+          schema:
+            type: integer
+        - name: id
+          in: path
+          required: true
+          description: |
+            For example, the `{id}` for the following URL is **2**.<br/>
+            `https://app.autify.com/projects/1/scenarios/2`
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Story"
+  "/projects/{project_id}/results":
+    get:
+      description: |
+        # List results
+        The same content as listed on https://app.autify.com/projects/{project_id}/results will be returned.
+      tags:
+        - result
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          description: |
+            For example, the `{project_id}` for the following URL is **1**.<br/>
+            `https://app.autify.com/projects/1/results`
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+          description: The number of page returns.
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 30
+          description: The number of items returns. Default number is 30 and up to a maximum of 100
+        - name: test_plan_id
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Test plan ID used to filter results.
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TestPlanResult"
+  "/projects/{project_id}/results/{id}":
+    get:
+      description: |
+        # Get a result
+        The same content as shown on https://app.autify.com/projects/{project_id}/results/{id} will be returned.
+      tags:
+        - result
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          description: |
+            For example, the `{project_id}` for the following URL is **1**.<br/>
+            `https://app.autify.com/projects/1/results/4`
+          schema:
+            type: integer
+        - name: id
+          in: path
+          required: true
+          description: |
+            For example, the `{id}` for the following URL is **4**.<br/>
+            `https://app.autify.com/projects/1/results/4`
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  status:
+                    type: string
+                    enum:
+                      - queuing
+                      - waiting
+                      - running
+                      - passed
+                      - failed
+                      - skipped
+                    default: waiting
+                  duration:
+                    type: integer
+                  started_at:
+                    type: string
+                    format: date-time
+                  finished_at:
+                    type: string
+                    format: date-time
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+                  test_plan_capability_results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        capability:
+                          $ref: "#/components/schemas/Capability"
+                        test_case_results:
+                          type: array
+                          items:
+                            $ref: "#/components/schemas/TestCaseResult"
+                  test_plan:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      created_at:
+                        type: string
+                        format: date-time
+                      updated_at:
+                        type: string
+                        format: date-time
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: http
+  schemas:
+    Story:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Capability:
+      properties:
+        id:
+          type: integer
+        os:
+          type: string
+        os_version:
+          type: string
+        browser:
+          type: string
+        browser_version:
+          type: string
+        device:
+          type: string
+        resolution:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    TestPlan:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    TestPlanResult:
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum:
+            - waiting
+            - running
+            - passed
+            - failed
+            - skipped
+          default: waiting
+        duration:
+          type: integer
+        started_at:
+          type: string
+          format: date-time
+        finished_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        test_plan:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+    TestPlanCapabilityResult:
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum:
+            - waiting
+            - running
+            - passed
+            - failed
+            - skipped
+          default: waiting
+        duration:
+          type: integer
+        started_at:
+          type: string
+          format: date-time
+        finished_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    TestCaseResult:
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum:
+            - waiting
+            - running
+            - passed
+            - failed
+            - skipped
+          default: waiting
+        duration:
+          type: integer
+        started_at:
+          type: string
+          format: date-time
+        finished_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time

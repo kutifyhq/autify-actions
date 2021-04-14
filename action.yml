@@ -1,0 +1,16 @@
+name: 'autify-action'
+description: 'Run Autify test'
+author: 'KeisukeYamashita'
+inputs:
+  id:
+    required: true
+    description: 'TestPlan ID'
+  token:
+    required: true
+    description: 'Personal access token for Autify'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+branding:
+  icon: 'check-circle'
+  color: 'green'
