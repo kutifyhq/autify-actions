@@ -1,0 +1,13 @@
+name: E2E 
+on: [pull_request]
+
+jobs:
+  run:
+    name: Run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          token: ${{ secrets.AUTIFY_TOKEN }} 
+          id: ${{ secrets.AUTIFY_TESTPLAN_ID }}

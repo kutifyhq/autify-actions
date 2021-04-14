@@ -1,44 +1,22 @@
-import * as core from '@actions/core'
-import Retry from './retry'
-import {inspect} from 'util'
-import {ScheduleApi, Configuration} from './api'
 import axios from 'axios'
-
+import {ScheduleApi, Configuration, ScheduleApiFactory} from './api'
 export interface Inputs {
-  intervalSeconds: number
   token: string
   id: number
-  timeoutSeconds: number
 }
 
 export class Autifyer {
-  private retry: Retry
   private schedule: ScheduleApi
 
   constructor(cfg: Inputs) {
-    this.retry = new Retry()
-      .timeout(cfg.timeoutSeconds)
-      .interval(cfg.intervalSeconds)
+    const instance = axios.create()
 
-    const apiConfig = new Configuration({apiKey: cfg.token})
+    const apiConfig = new Configuration({accessToken: cfg.token})
     this.schedule = new ScheduleApi(apiConfig)
   }
 
   async run(id: number): Promise<void> {
-    try {
-      await this.retry.exec(
-        async (count): Promise<void> => {
-          try {
-            this.schedule.schedulesIdPost(id)
-          } catch (err) {
-            core.debug(`failed retry count:${count} with error ${inspect(err)}`)
-            throw err
-          }
-        }
-      )
-    } catch (err) {
-      core.debug(`Failed to run test:${inspect(err)}`)
-    }
+    await this.schedule.schedulesIdPost(id)
   }
 }
 

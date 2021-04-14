@@ -5,11 +5,8 @@ import {inspect} from 'util'
 async function run(): Promise<void> {
   try {
     const inputs: Inputs = {
-      intervalSeconds:
-        Number(core.getInput('intervalSeconds', {required: true})) * 1000,
       id: Number(core.getInput('id', {required: true})),
-      token: core.getInput('token', {required: true}),
-      timeoutSeconds: Number(core.getInput('timeoutSeconds', {required: true}))
+      token: core.getInput('token', {required: true})
     }
 
     // secrets will be masked by GitHub
