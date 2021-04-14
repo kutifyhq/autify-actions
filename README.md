@@ -11,11 +11,12 @@ A GitHub Action that runs [Autify](https://autify.com/) tests.
 ```yml
 on: pull_request
 jobs:
-  auto-merge:
-    - name: Merge
+  run-test:
+    - name: Run Test
       uses: KeisukeYamashita/autify-action@v1
       with:
         token: ${{ secrets.AUTIFY_TOKEN }}
+        id: 10000
 ```
 
 ### Action inputs
