@@ -21,6 +21,7 @@ jobs:
 
 | Name | Description | Default |
 | --- | --- | --- |
+| `id` | ID of the test plan to run | - (Required) |
 | `token` | Personal access token for Autify | - (Required) |
 
 ### Action outputs
