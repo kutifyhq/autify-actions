@@ -890,16 +890,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Autifyer = void 0;
-const axios_1 = __importDefault(__nccwpck_require__(6545));
 const api_1 = __nccwpck_require__(5614);
 class Autifyer {
     constructor(cfg) {
-        const instance = axios_1.default.create();
         const apiConfig = new api_1.Configuration({ accessToken: cfg.token });
         this.schedule = new api_1.ScheduleApi(apiConfig);
     }
