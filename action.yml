@@ -1,4 +1,4 @@
-name: 'autify-action'
+name: autify-actions
 description: 'Run Autify test'
 author: 'KeisukeYamashita'
 inputs:

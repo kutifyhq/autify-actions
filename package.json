@@ -1,5 +1,5 @@
 {
-  "name": "autify-action",
+  "name": "autify-actions",
   "version": "1.0.0",
   "description": "Run Autify test",
   "main": "lib/main.js",
